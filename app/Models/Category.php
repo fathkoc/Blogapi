@@ -13,9 +13,6 @@ class Category extends Model
 
     protected $fillable = ['name'];
 
-    /**
-     * Kategoriye ait bloglar ile ilişkisi (Bir kategori birden fazla bloga sahip olabilir)
-     */
     public function blogs()
     {
         return $this->hasMany(Blog::class);

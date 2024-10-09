@@ -21,7 +21,6 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
-        // Rate limiting sınırına ulaşıldığında özelleştirilmiş mesaj
         if ($exception instanceof TooManyRequestsHttpException) {
             return response()->json([
                 'message' => 'Çok fazla istek yaptınız. Lütfen 1 dakika sonra tekrar deneyin.'

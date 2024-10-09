@@ -20,7 +20,7 @@ class BlogApiTest extends TestCase
     public function test_blog_creation()
     {
         $this->withoutMiddleware(VerifyCsrfToken::class);
-        // Geçerli bir kategori oluşturuyoruz
+        
         $category = Category::factory()->create();
 
         $response = $this->postJson('/blogs', [
@@ -28,7 +28,7 @@ class BlogApiTest extends TestCase
             'content' => 'Bu bir test blog içeriğidir.',
             'author' => 'Test Author',
             'image' => 'test-image-url.jpg',
-            'category_id' => $category->id, // Oluşturulan kategorinin id'sini kullanıyoruz
+            'category_id' => $category->id, 
         ]);
 
         $response->assertStatus(201);
@@ -46,11 +46,9 @@ class BlogApiTest extends TestCase
         $this->withoutMiddleware(VerifyCsrfToken::class);
         $category = Category::factory()->create();
 
-        // Mocking ContentModerationService
         $moderationServiceMock = Mockery::mock(ContentModerationService::class);
         $this->app->instance(ContentModerationService::class, $moderationServiceMock);
 
-        // Mocked response
         $moderationServiceMock->shouldReceive('moderateContent')
             ->once()
             ->with('Bu bir test blog içeriğidir.')
@@ -79,11 +77,9 @@ class BlogApiTest extends TestCase
         $this->withoutMiddleware(VerifyCsrfToken::class);
         $category = Category::factory()->create();
 
-        // Mocking ContentModerationService
         $moderationServiceMock = Mockery::mock(ContentModerationService::class);
         $this->app->instance(ContentModerationService::class, $moderationServiceMock);
 
-        // Mocked response for rejected content
         $moderationServiceMock->shouldReceive('moderateContent')
             ->once()
             ->with('Uygunsuz içerik.')
