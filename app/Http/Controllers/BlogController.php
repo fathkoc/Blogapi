@@ -4,14 +4,28 @@ namespace App\Http\Controllers;
 
 use App\Models\Blog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+use App\Services\ContentModerationService;
 
 class BlogController extends Controller
 {
-    public function index()
+    protected $moderationService;
+
+    public function __construct(ContentModerationService $moderationService)
     {
-        return response()->json(Blog::all(), 200);
+        $this->moderationService = $moderationService;
     }
 
+    public function index()
+    {
+        $blogs = Blog::all();
+        return view('blogs.index', compact('blogs'));
+    }
+
+    public function create()
+    {
+        return view('blogs.create');
+    }
 
     public function store(Request $request)
     {
@@ -20,26 +34,47 @@ class BlogController extends Controller
             'content' => 'required',
             'author' => 'required|string|max:255',
             'image' => 'required|string',
+        ],[
+            'title.required' => 'Blog başlığı alanı zorunludur.',
+            'title.max' => 'Blog başlığı en fazla 255 karakter olabilir.',
+            'content.required' => 'İçerik alanı zorunludur.',
+            'author.required' => 'Yazar alanı zorunludur.',
+            'image.required' => 'Resim URL\'si alanı zorunludur.',
         ]);
 
-        $blog = Blog::create($request->all());
+        $moderationResult = $this->moderationService->moderateContent($request->input('content'));
 
-        return response()->json($blog, 201);
+        if ($moderationResult['status'] === 'rejected') {
+            return back()->withErrors(['content' => $moderationResult['message']]);
+        }
+        
+        Blog::create($request->all());
+
+        return redirect()->route('blogs.index')->with('success', 'Blog created successfully.');
     }
 
-    
     public function show($id)
     {
         $blog = Blog::find($id);
         
         if (!$blog) {
-            return response()->json(['message' => 'Blog not found'], 404);
+            return redirect()->route('blogs.index')->with('error', 'Blog not found.');
         }
 
-        return response()->json($blog, 200);
+        return view('blogs.show', compact('blog'));
     }
 
-   
+    public function edit($id)
+    {
+        $blog = Blog::find($id);
+        
+        if (!$blog) {
+            return redirect()->route('blogs.index')->with('error', 'Blog not found.');
+        }
+
+        return view('blogs.edit', compact('blog'));
+    }
+
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -47,30 +82,41 @@ class BlogController extends Controller
             'content' => 'sometimes|required',
             'author' => 'sometimes|required|string|max:255',
             'image' => 'sometimes|required|string',
+        ],[
+            'title.required' => 'Blog başlığı alanı zorunludur.',
+            'title.max' => 'Blog başlığı en fazla 255 karakter olabilir.',
+            'content.required' => 'İçerik alanı zorunludur.',
+            'author.required' => 'Yazar alanı zorunludur.',
+            'image.required' => 'Resim URL\'si alanı zorunludur.',
         ]);
 
         $blog = Blog::find($id);
         
         if (!$blog) {
-            return response()->json(['message' => 'Blog not found'], 404);
+            return redirect()->route('blogs.index')->with('error', 'Blog not found.');
+        }
+
+        $moderationResult = $this->moderationService->moderateContent($request->input('content'));
+       
+        if ($moderationResult['status'] === 'rejected') {
+            return back()->withErrors(['content' => $moderationResult['message']]);
         }
 
         $blog->update($request->all());
 
-        return response()->json($blog, 200);
+        return redirect()->route('blogs.index')->with('success', 'Blog updated successfully.');
     }
-
 
     public function destroy($id)
     {
         $blog = Blog::find($id);
         
         if (!$blog) {
-            return response()->json(['message' => 'Blog not found'], 404);
+            return redirect()->route('blogs.index')->with('error', 'Blog not found.');
         }
 
         $blog->delete();
 
-        return response()->json(['message' => 'Blog deleted'], 200);
+        return redirect()->route('blogs.index')->with('success', 'Blog deleted successfully.');
     }
 }
