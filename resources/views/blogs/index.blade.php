@@ -22,7 +22,7 @@
                             <td>{{ $blog->id }}</td>
                             <td>{{ $blog->title }}</td>
                             <td>{{ $blog->author }}</td>
-                            <td>{{ $blog->category ?? 'N/A' }}</td>
+                            <td>{{ $blog->category->name ?? 'N/A' }}</td>
                             <td>
                                 <a href="{{ url('/blogs/' . $blog->id . '/edit') }}" class="btn btn-primary btn-sm">Edit</a>
                                 <form action="{{ url('/blogs/' . $blog->id) }}" method="POST" class="d-inline">

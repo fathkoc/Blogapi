@@ -12,13 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('blogs', function (Blueprint $table) {
-            $table->id();
-            $table->string('title');
-            $table->text('content');
-            $table->string('author');
-            $table->string('image');
-            $table->string('category')->nullable();
-            $table->timestamps(); // This includes created_at and updated_at
+            $table->id(); 
+            $table->string('title'); 
+            $table->text('content'); 
+            $table->string('author'); 
+            $table->string('image'); 
+            $table->foreignId('category_id')->nullable()->constrained('categories')->onDelete('set null');
+            $table->timestamps(); 
         });
     }
 

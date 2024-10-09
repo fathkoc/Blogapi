@@ -35,8 +35,15 @@
                     <input type="text" class="form-control" id="image" name="image" value="{{ $blog->image }}" required>
                 </div>
                 <div class="mb-3">
-                    <label for="category" class="form-label">Kategori</label>
-                    <input type="text" class="form-control" id="category" name="category" value="{{ $blog->category }}">
+                    <label for="category_id" class="form-label">Kategori</label>
+                    <select class="form-control" id="category_id" name="category_id">
+                        <option value="">Kategori Seçin</option>
+                        @foreach ($categories as $category)
+                            <option value="{{ $category->id }}" {{ old('category_id', $blog->category_id ?? '') == $category->id ? 'selected' : '' }}>
+                                {{ $category->name }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
                 <button type="submit" class="btn btn-primary">Güncelle</button>
             </form>
