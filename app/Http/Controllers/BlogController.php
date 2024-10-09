@@ -7,13 +7,12 @@ use Illuminate\Http\Request;
 
 class BlogController extends Controller
 {
-    // Tüm blog yazılarını listeleme
     public function index()
     {
         return response()->json(Blog::all(), 200);
     }
 
-    // Yeni bir blog yazısı oluşturma
+
     public function store(Request $request)
     {
         $request->validate([
@@ -28,7 +27,7 @@ class BlogController extends Controller
         return response()->json($blog, 201);
     }
 
-    // Belirli bir blog yazısını gösterme
+    
     public function show($id)
     {
         $blog = Blog::find($id);
@@ -40,7 +39,7 @@ class BlogController extends Controller
         return response()->json($blog, 200);
     }
 
-    // Blog yazısını güncelleme
+   
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -61,7 +60,7 @@ class BlogController extends Controller
         return response()->json($blog, 200);
     }
 
-    // Blog yazısını silme
+
     public function destroy($id)
     {
         $blog = Blog::find($id);
