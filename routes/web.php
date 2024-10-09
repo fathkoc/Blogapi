@@ -3,6 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BlogController;
 
+Route::get('/', function () {
+    return redirect('/blogs');
+});
 
 Route::middleware('throttle:60,1')->group(function () {
     Route::get('/blogs', [BlogController::class, 'index'])->name('blogs.index');
